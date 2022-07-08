@@ -1,0 +1,61 @@
+{% extends "shortener/base.html" %}
+
+{% block title %}URL shortener{% endblock %}
+
+{% block content %}
+
+<div class="panel panel-default">
+    <div class="panel-body">
+        <div class="col-sm-9">
+            <input type="text" name="url" id="url" class="form-control input-sm" placeholder="http://example.com/verylongurl..." />
+        </div>
+        <div class="col-sm-3">
+        {% csrf_token %}
+            <button id="submitButton" class="btn btn-primary">Make it shorter</button></p>
+        </div>
+ </div>
+<div class="panel-footer"><span id="url-result">Enter the URL above and click submit!</span></div>
+</div>
+
+<div style="float: left;">
+<p>All results</p>
+{% for data in urls %}
+
+<table class='table' style="float: left;">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Shorted URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">{{ data.id }}</th>
+        <td><a href="{% url 'shortener:redirectoriginal' shorted_url=data.shorted_url %}">{{ prefix|add:'/'|add:data.shorted_url}}</a></td>
+      </tr>
+    </tbody>
+  </table>
+
+{% endfor %}
+
+{% if user.is_authenticated %}
+<p>Previous results</p>
+{% for data in previous_urls %}
+<table class='table' style="float: left;">
+    <thead>
+      <tr>
+        <th scope="col">id</th>
+        <th scope="col">Shorted URL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">{{ data.id }}</th>
+        <td><a href="{% url 'shortener:redirectoriginal' shorted_url=data.shorted_url %}">{{ prefix|add:'/'|add:data.shorted_url}}</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endfor %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}URL shortener{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'shortener/css/custom.css' %}" />
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<script type="text/javascript">
+ $(function() {
+ $('#submitButton').click(function() {
+ $.ajax({
+ type: "POST",
+ url: "/shorting_url/",
+ data: {
+ 'url' : $('#url').val(),
+ 'csrfmiddlewaretoken' : $("input[name=csrfmiddlewaretoken]").val()
+ },
+ success: returnSuccess,
+ dataType: 'json'
+ });
+ });
+});
+
+function returnSuccess(data, textStatus, jqXHR) {
+ if(data.url) {
+ $('#url-result').text(data.url);
+ $('#url').val("");
+ } else {
+ $('#url-result').text("Do not submit blank.");
+ }
+
+}
+</script>
+<body>
+    <div id="wrap">
+    <header>
+        <h1><a href="{% url 'shortener:home' %}">URL Shortner</a><small> Shorten the URL</small></h1>
+        {% if user.is_authenticated %}
+        <p>Logged as {{ user.username }} </p>
+        <a href="{% url 'shortener:logout' %}">Logout</a>
+        {% else %}
+        <p>New to this site?<a href="{% url 'shortener:register' %}"> Sign Up!</a> or <a href="{% url 'shortener:login' %}"> Log In</a> if u have an account.</p>
+        {% endif %}
+    </header>
+
+        <div id="content">
+        {% block content %}
+
+        {% endblock %}
+        </div>
+    </div>
+</body>
+</html>
